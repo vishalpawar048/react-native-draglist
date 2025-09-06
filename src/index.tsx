@@ -127,16 +127,6 @@ function DragListImpl<T>(
   const keyExtractorRef = useRef(keyExtractor);
   keyExtractorRef.current = keyExtractor;
 
-  // We force items to re-render when data changes. This is suboptimal, because most of the time
-  // when data changes we're just reordering things, which shouldn't need re-rendering their
-  // children. However, React Native reuses recycled native views if you keep keys the same, which
-  // makes the items jump around visually even if the code explicitly doesn't ask for it (because of
-  // lag between setting animation values and the JS bridge when you useNativeDriver). So we
-  // deliberately combine each item's key with the rendering generation number.
-  const generationKeyExtractor = useCallback((item: T, index: number) => {
-    return keyExtractorRef.current(item, index) + dataGenRef.current;
-  }, []);
-
   const dataRef = useRef(data);
   dataRef.current = data;
 
@@ -488,7 +478,6 @@ function DragListImpl<T>(
               }
             }
           }}
-          keyExtractor={generationKeyExtractor}
           data={data}
           renderItem={renderDragItem}
           CellRendererComponent={CellRendererComponent}
